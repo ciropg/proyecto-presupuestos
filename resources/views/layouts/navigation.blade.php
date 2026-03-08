@@ -25,6 +25,10 @@
                             {{ __('Categories') }}
                         </x-nav-link>
 
+                        <x-nav-link :href="route('admin.resources.index')" :active="request()->routeIs('admin.resources.*')">
+                            {{ __('Resources') }}
+                        </x-nav-link>
+
                         <x-nav-link :href="route('admin.units.index')" :active="request()->routeIs('admin.units.*')">
                             {{ __('Units') }}
                         </x-nav-link>
@@ -92,6 +96,10 @@
 
                 <x-responsive-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">
                     {{ __('Categories') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('admin.resources.index')" :active="request()->routeIs('admin.resources.*')">
+                    {{ __('Resources') }}
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('admin.units.index')" :active="request()->routeIs('admin.units.*')">

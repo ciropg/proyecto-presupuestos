@@ -21,6 +21,13 @@
                         </a>
 
                         <a
+                            href="{{ route('admin.resources.index') }}"
+                            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 transition hover:bg-gray-50"
+                        >
+                            {{ __('Manage Resources') }}
+                        </a>
+
+                        <a
                             href="{{ route('admin.units.index') }}"
                             class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 transition hover:bg-gray-50"
                         >
