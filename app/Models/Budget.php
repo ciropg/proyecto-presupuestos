@@ -11,6 +11,10 @@ class Budget extends Model
 {
     use HasFactory;
 
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_PUBLISHED = 'published';
+    public const STATUS_CANCELLED = 'cancelled';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -18,8 +22,10 @@ class Budget extends Model
      */
     protected $fillable = [
         'user_id',
+        'code',
         'title',
         'description',
+        'budget_date',
         'status',
         'is_published',
         'total_cost',
@@ -33,8 +39,21 @@ class Budget extends Model
     protected function casts(): array
     {
         return [
+            'budget_date' => 'date',
             'is_published' => 'boolean',
             'total_cost' => 'decimal:2',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function statusOptions(): array
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_PUBLISHED => 'Published',
+            self::STATUS_CANCELLED => 'Cancelled',
         ];
     }
 
