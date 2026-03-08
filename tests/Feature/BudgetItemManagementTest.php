@@ -45,6 +45,41 @@ class BudgetItemManagementTest extends TestCase
         $this->assertSame('97.50', $budget->fresh()->total_cost);
     }
 
+    public function test_a_user_can_add_a_manual_item_without_a_catalog_resource(): void
+    {
+        $user = $this->createUser();
+        $budget = $this->createBudget($user, 'BGT-ITEM-002');
+        $unit = Unit::query()->create([
+            'name' => 'Hour',
+            'symbol' => 'hr',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('budgets.items.store', $budget), [
+                'resource_id' => null,
+                'name' => 'Electrical installation',
+                'unit_id' => $unit->id,
+                'description' => 'Manual service item',
+                'quantity' => 5,
+                'unit_price' => 18.75,
+            ]);
+
+        $response->assertRedirect(route('budgets.show', $budget));
+        $this->assertDatabaseHas('budget_items', [
+            'budget_id' => $budget->id,
+            'resource_id' => null,
+            'unit_id' => $unit->id,
+            'name' => 'Electrical installation',
+            'description' => 'Manual service item',
+        ]);
+
+        $budgetItem = BudgetItem::query()->firstOrFail();
+
+        $this->assertSame('93.75', $budgetItem->subtotal);
+        $this->assertSame('93.75', $budget->fresh()->total_cost);
+    }
+
     public function test_a_user_can_edit_a_budget_item_and_the_totals_are_recalculated(): void
     {
         $user = $this->createUser();

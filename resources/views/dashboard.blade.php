@@ -12,6 +12,22 @@
                     <p class="text-lg font-semibold">{{ __('Welcome back, :name', ['name' => auth()->user()->name]) }}</p>
                     <p>{{ __('Your session is active and your account can access protected routes.') }}</p>
 
+                    <div class="flex flex-wrap gap-3">
+                        <a
+                            href="{{ route('budgets.index') }}"
+                            class="inline-flex items-center rounded-md bg-gray-900 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-gray-700"
+                        >
+                            {{ __('View Budgets') }}
+                        </a>
+
+                        <a
+                            href="{{ route('budgets.create') }}"
+                            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 transition hover:bg-gray-50"
+                        >
+                            {{ __('New Budget') }}
+                        </a>
+                    </div>
+
                     @if (auth()->user()->isAdmin())
                         <p class="text-sm text-indigo-700">
                             {{ __('Your account also has administrator privileges.') }}

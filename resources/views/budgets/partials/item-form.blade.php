@@ -1,10 +1,13 @@
 @php
     $item = $budgetItem ?? null;
     $selectedResourceId = (string) old('resource_id', $item?->resource_id ?? '');
+    $selectedUnitId = (string) old('unit_id', $item?->unit_id ?? '');
     $resourceData = $resources
         ->mapWithKeys(fn ($resource) => [
             (string) $resource->id => [
+                'name' => $resource->name,
                 'category' => $resource->category->name,
+                'unit_id' => (string) $resource->unit_id,
                 'unit' => $resource->unit->name.' ('.$resource->unit->symbol.')',
                 'unit_price' => number_format((float) $resource->unit_price, 2, '.', ''),
             ],
@@ -18,16 +21,21 @@
     x-data="{
         resources: {{ \Illuminate\Support\Js::from($resourceData) }},
         selectedId: '{{ $selectedResourceId }}',
-        categoryLabel: '',
-        unitLabel: '',
+        categoryLabel: '{{ __('Manual item') }}',
+        name: '{{ old('name', $item?->name ?? '') }}',
+        unitId: '{{ $selectedUnitId }}',
         quantity: '{{ old('quantity', $item ? (float) $item->quantity : '') }}',
         unitPrice: '{{ old('unit_price', $item ? number_format((float) $item->unit_price, 2, '.', '') : '') }}',
         subtotal: '0.00',
         syncSelectedResource(resetPrice = false) {
             const resource = this.resources[this.selectedId] ?? null;
 
-            this.categoryLabel = resource ? resource.category : '';
-            this.unitLabel = resource ? resource.unit : '';
+            this.categoryLabel = resource ? resource.category : '{{ __('Manual item') }}';
+
+            if (resource) {
+                this.name = resource.name;
+                this.unitId = resource.unit_id;
+            }
 
             if (resource && (resetPrice || this.unitPrice === '')) {
                 this.unitPrice = resource.unit_price;
@@ -52,7 +60,7 @@
 >
     <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
         <p><span class="font-medium">{{ __('Budget') }}:</span> {{ $budget->code }} - {{ $budget->title }}</p>
-        <p class="mt-1">{{ __('Selecting a resource keeps the unit aligned with the catalog. You can adjust quantity, description and unit price if needed.') }}</p>
+        <p class="mt-1">{{ __('You can link the item to a catalog resource or register it manually with its own name, unit, quantity and price.') }}</p>
     </div>
 
     <div>
@@ -63,9 +71,8 @@
             x-model="selectedId"
             x-on:change="syncSelectedResource(true)"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            required
         >
-            <option value="">{{ __('Select a resource') }}</option>
+            <option value="">{{ __('Manual item / No catalog resource') }}</option>
             @foreach ($resources as $resource)
                 <option value="{{ $resource->id }}" @selected($selectedResourceId === (string) $resource->id)>
                     {{ $resource->name }}
@@ -77,6 +84,21 @@
 
     <div class="grid gap-6 md:grid-cols-2">
         <div>
+            <x-input-label for="name" :value="__('Item Name')" />
+            <input
+                id="name"
+                name="name"
+                type="text"
+                x-model="name"
+                x-bind:readonly="selectedId !== ''"
+                x-bind:required="selectedId === ''"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            />
+            <p class="mt-1 text-xs text-gray-500" x-show="selectedId !== ''">{{ __('The item name is taken from the selected resource.') }}</p>
+            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+        </div>
+
+        <div>
             <x-input-label :value="__('Category')" />
             <input
                 type="text"
@@ -85,15 +107,28 @@
                 readonly
             />
         </div>
+    </div>
 
+    <div class="grid gap-6 md:grid-cols-2">
         <div>
-            <x-input-label :value="__('Unit')" />
-            <input
-                type="text"
-                x-model="unitLabel"
-                class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm"
-                readonly
-            />
+            <x-input-label for="unit_id" :value="__('Unit')" />
+            <select
+                id="unit_id"
+                name="unit_id"
+                x-model="unitId"
+                x-bind:disabled="selectedId !== ''"
+                x-bind:required="selectedId === ''"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
+            >
+                <option value="">{{ __('Select a unit') }}</option>
+                @foreach ($units as $unit)
+                    <option value="{{ $unit->id }}" @selected($selectedUnitId === (string) $unit->id)>
+                        {{ $unit->name }} ({{ $unit->symbol }})
+                    </option>
+                @endforeach
+            </select>
+            <p class="mt-1 text-xs text-gray-500" x-show="selectedId !== ''">{{ __('The unit is synchronized from the selected resource.') }}</p>
+            <x-input-error class="mt-2" :messages="$errors->get('unit_id')" />
         </div>
     </div>
 

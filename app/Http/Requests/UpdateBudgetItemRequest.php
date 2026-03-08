@@ -18,7 +18,9 @@ class UpdateBudgetItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'resource_id' => ['required', 'integer', Rule::exists('resources', 'id')],
+            'resource_id' => ['nullable', 'integer', Rule::exists('resources', 'id')],
+            'name' => ['nullable', 'string', 'max:150', 'required_without:resource_id'],
+            'unit_id' => ['nullable', 'integer', Rule::exists('units', 'id'), 'required_without:resource_id'],
             'description' => ['nullable', 'string', 'max:1000'],
             'quantity' => ['required', 'numeric', 'gt:0'],
             'unit_price' => ['required', 'numeric', 'min:0'],

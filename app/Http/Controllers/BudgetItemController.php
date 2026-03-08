@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateBudgetItemRequest;
 use App\Models\Budget;
 use App\Models\BudgetItem;
 use App\Models\Resource;
+use App\Models\Unit;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -29,10 +30,11 @@ class BudgetItemController extends Controller
     {
         $this->authorize('update', $budget);
 
-        $resource = Resource::query()->findOrFail($request->integer('resource_id'));
+        $validated = $request->validated();
+        $resource = $this->resolveResource($validated);
 
         BudgetItem::query()->create(
-            $this->buildBudgetItemData($budget, $resource, $request->validated())
+            $this->buildBudgetItemData($budget, $resource, $validated)
         );
 
         $budget->recalculateTotalCost();
@@ -60,10 +62,11 @@ class BudgetItemController extends Controller
         $this->authorize('update', $budget);
 
         $budgetItem = $this->resolveBudgetItem($budget, $budgetItem);
-        $resource = Resource::query()->findOrFail($request->integer('resource_id'));
+        $validated = $request->validated();
+        $resource = $this->resolveResource($validated);
 
         $budgetItem->update(
-            $this->buildBudgetItemData($budget, $resource, $request->validated())
+            $this->buildBudgetItemData($budget, $resource, $validated)
         );
 
         $budget->recalculateTotalCost();
@@ -88,19 +91,28 @@ class BudgetItemController extends Controller
     }
 
     /**
-     * @param  array{description: string|null, quantity: numeric-string|int|float, unit_price: numeric-string|int|float}  $validated
+     * @param  array{
+     *     description: string|null,
+     *     name?: string|null,
+     *     quantity: numeric-string|int|float,
+     *     resource_id?: int|string|null,
+     *     unit_id?: int|string|null,
+     *     unit_price: numeric-string|int|float
+     * }  $validated
      * @return array<string, mixed>
      */
-    private function buildBudgetItemData(Budget $budget, Resource $resource, array $validated): array
+    private function buildBudgetItemData(Budget $budget, ?Resource $resource, array $validated): array
     {
         $quantity = (float) $validated['quantity'];
         $unitPrice = (float) $validated['unit_price'];
+        $name = $resource?->name ?? trim((string) ($validated['name'] ?? ''));
+        $unitId = $resource?->unit_id ?? (int) ($validated['unit_id'] ?? 0);
 
         return [
             'budget_id' => $budget->id,
-            'resource_id' => $resource->id,
-            'unit_id' => $resource->unit_id,
-            'name' => $resource->name,
+            'resource_id' => $resource?->id,
+            'unit_id' => $unitId,
+            'name' => $name,
             'description' => $validated['description'],
             'quantity' => $validated['quantity'],
             'unit_price' => $validated['unit_price'],
@@ -109,7 +121,10 @@ class BudgetItemController extends Controller
     }
 
     /**
-     * @return array{resources: \Illuminate\Database\Eloquent\Collection<int, Resource>}
+     * @return array{
+     *     resources: \Illuminate\Database\Eloquent\Collection<int, Resource>,
+     *     units: \Illuminate\Database\Eloquent\Collection<int, Unit>
+     * }
      */
     private function getFormData(): array
     {
@@ -118,7 +133,24 @@ class BudgetItemController extends Controller
                 ->with(['category', 'unit'])
                 ->orderBy('name')
                 ->get(),
+            'units' => Unit::query()
+                ->orderBy('name')
+                ->get(),
         ];
+    }
+
+    /**
+     * @param  array{resource_id?: int|string|null}  $validated
+     */
+    private function resolveResource(array $validated): ?Resource
+    {
+        $resourceId = $validated['resource_id'] ?? null;
+
+        if ($resourceId === null || $resourceId === '') {
+            return null;
+        }
+
+        return Resource::query()->findOrFail((int) $resourceId);
     }
 
     private function resolveBudgetItem(Budget $budget, BudgetItem $budgetItem): BudgetItem

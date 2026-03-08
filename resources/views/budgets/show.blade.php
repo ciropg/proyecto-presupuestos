@@ -113,10 +113,10 @@
                             @forelse ($budget->budgetItems as $budgetItem)
                                 <tr>
                                     <td class="px-6 py-4 text-sm text-gray-900">
-                                        <div class="font-medium">{{ $budgetItem->resource->name }}</div>
+                                        <div class="font-medium">{{ $budgetItem->resource?->name ?? $budgetItem->name }}</div>
                                         <div class="mt-1 text-gray-500">{{ $budgetItem->description ?: '-' }}</div>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $budgetItem->resource->category->name }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $budgetItem->resource?->category?->name ?? __('Manual item') }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $budgetItem->unit->name }} ({{ $budgetItem->unit->symbol }})</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ number_format((float) $budgetItem->quantity, 4) }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ number_format((float) $budgetItem->unit_price, 2) }}</td>

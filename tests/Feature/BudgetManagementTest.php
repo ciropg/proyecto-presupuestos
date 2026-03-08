@@ -111,6 +111,8 @@ class BudgetManagementTest extends TestCase
             ->get(route('budgets.index'))
             ->assertOk()
             ->assertSee('My Budget')
+            ->assertSee('Add Item')
+            ->assertSee(route('budgets.items.create', $user->budgets()->first()), false)
             ->assertDontSee('Other Budget');
     }
 
