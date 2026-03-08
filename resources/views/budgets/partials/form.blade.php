@@ -71,7 +71,8 @@
     </div>
 
     <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
-        {{ __('Items and cost breakdown will be added in step 8. The total cost remains at 0.00 until those records are created.') }}
+        <p>{{ __('You can add items and cost breakdown after saving the budget.') }}</p>
+        <p class="mt-1">{{ __('Budgets with status Published are shown on the public home page.') }}</p>
     </div>
 
     <div class="flex items-center gap-3">

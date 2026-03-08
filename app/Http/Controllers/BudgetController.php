@@ -8,11 +8,37 @@ use App\Models\Budget;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class BudgetController extends Controller
 {
     use AuthorizesRequests;
+
+    public function publicIndex(): View
+    {
+        $budgets = Budget::query()
+            ->published()
+            ->withCount('budgetItems')
+            ->latest('budget_date')
+            ->latest()
+            ->paginate(9);
+
+        return view('welcome', [
+            'budgets' => $budgets,
+        ]);
+    }
+
+    public function publicShow(Budget $budget): View
+    {
+        abort_unless($budget->isPubliclyVisible(), 404);
+
+        $budget->loadCount('budgetItems');
+
+        return view('budgets.public-show', [
+            'budget' => $budget,
+        ]);
+    }
 
     public function index(): View
     {
@@ -46,7 +72,7 @@ class BudgetController extends Controller
 
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
-        $data['is_published'] = $data['status'] === Budget::STATUS_PUBLISHED;
+        $data = $this->syncPublicationState($data);
         $data['total_cost'] = 0;
 
         Budget::create($data);
@@ -83,14 +109,35 @@ class BudgetController extends Controller
     {
         $this->authorize('update', $budget);
 
-        $data = $request->validated();
-        $data['is_published'] = $data['status'] === Budget::STATUS_PUBLISHED;
+        $data = $this->syncPublicationState($request->validated());
 
         $budget->update($data);
 
         return redirect()
             ->route('budgets.index')
             ->with('success', 'Budget updated successfully.');
+    }
+
+    public function updatePublication(Request $request, Budget $budget): RedirectResponse
+    {
+        $this->authorize('publish', $budget);
+
+        $request->validate([
+            'published' => ['required', 'boolean'],
+        ]);
+
+        $shouldPublish = $request->boolean('published');
+
+        $budget->update($this->buildPublicationData($budget, $shouldPublish));
+
+        return redirect()
+            ->route('budgets.show', $budget)
+            ->with(
+                'success',
+                $shouldPublish
+                    ? 'Budget published successfully.'
+                    : 'Budget unpublished successfully.'
+            );
     }
 
     public function destroy(Budget $budget): RedirectResponse
@@ -117,6 +164,37 @@ class BudgetController extends Controller
     {
         return [
             'statuses' => Budget::statusOptions(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function syncPublicationState(array $data): array
+    {
+        $data['is_published'] = ($data['status'] ?? null) === Budget::STATUS_PUBLISHED;
+
+        return $data;
+    }
+
+    /**
+     * @return array{status: string, is_published: bool}
+     */
+    private function buildPublicationData(Budget $budget, bool $shouldPublish): array
+    {
+        if ($shouldPublish) {
+            return [
+                'status' => Budget::STATUS_PUBLISHED,
+                'is_published' => true,
+            ];
+        }
+
+        return [
+            'status' => $budget->status === Budget::STATUS_PUBLISHED
+                ? Budget::STATUS_DRAFT
+                : $budget->status,
+            'is_published' => false,
         ];
     }
 }

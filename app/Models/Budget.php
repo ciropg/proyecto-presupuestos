@@ -68,6 +68,18 @@ class Budget extends Model
         return $this->hasMany(BudgetItem::class);
     }
 
+    public function scopePublished($query)
+    {
+        return $query
+            ->where('is_published', true)
+            ->where('status', self::STATUS_PUBLISHED);
+    }
+
+    public function isPubliclyVisible(): bool
+    {
+        return $this->is_published && $this->status === self::STATUS_PUBLISHED;
+    }
+
     public function recalculateTotalCost(): void
     {
         $total = $this->budgetItems()

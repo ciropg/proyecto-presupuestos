@@ -5,7 +5,7 @@
                 {{ __('Budget Details') }}
             </h2>
 
-            <div class="flex gap-3">
+            <div class="flex flex-wrap gap-3">
                 @can('update', $budget)
                     <a
                         href="{{ route('budgets.items.create', $budget) }}"
@@ -21,6 +21,15 @@
                         {{ __('Edit Budget') }}
                     </a>
                 @endcan
+
+                @if ($budget->isPubliclyVisible())
+                    <a
+                        href="{{ route('budgets.public.show', $budget) }}"
+                        class="inline-flex items-center rounded-md border border-green-300 bg-green-50 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-green-700 transition hover:bg-green-100"
+                    >
+                        {{ __('Public View') }}
+                    </a>
+                @endif
 
                 <a
                     href="{{ route('budgets.index') }}"
@@ -50,6 +59,11 @@
                         </div>
 
                         <div>
+                            <p class="text-sm font-medium text-gray-500">{{ __('Visibility') }}</p>
+                            <p class="mt-1">{{ $budget->isPubliclyVisible() ? __('Published on home page') : __('Hidden from public home') }}</p>
+                        </div>
+
+                        <div>
                             <p class="text-sm font-medium text-gray-500">{{ __('Title') }}</p>
                             <p class="mt-1">{{ $budget->title }}</p>
                         </div>
@@ -76,6 +90,45 @@
                     </div>
                 </div>
             </div>
+
+            @can('publish', $budget)
+                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                    <div class="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-900">{{ __('Public Visibility') }}</p>
+                            <p class="mt-1 text-sm text-gray-600">
+                                {{ $budget->isPubliclyVisible()
+                                    ? __('This budget is visible on the public home page and can be consulted without logging in.')
+                                    : __('This budget is private. Publish it to show it on the public home page.') }}
+                            </p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3">
+                            <form method="POST" action="{{ route('budgets.publication.update', $budget) }}">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="published" value="{{ $budget->isPubliclyVisible() ? 0 : 1 }}">
+
+                                <button
+                                    type="submit"
+                                    class="{{ $budget->isPubliclyVisible() ? 'bg-amber-600 hover:bg-amber-500' : 'bg-green-600 hover:bg-green-500' }} inline-flex items-center rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition"
+                                >
+                                    {{ $budget->isPubliclyVisible() ? __('Unpublish Budget') : __('Publish Budget') }}
+                                </button>
+                            </form>
+
+                            @if ($budget->isPubliclyVisible())
+                                <a
+                                    href="{{ route('budgets.public.show', $budget) }}"
+                                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 transition hover:bg-gray-50"
+                                >
+                                    {{ __('Open Public Detail') }}
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endcan
 
             <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                 <div class="border-b border-gray-200 p-6">

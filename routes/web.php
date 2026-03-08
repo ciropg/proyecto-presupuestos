@@ -8,15 +8,15 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [BudgetController::class, 'publicIndex'])->name('home');
+Route::get('/budgets/public/{budget}', [BudgetController::class, 'publicShow'])->name('budgets.public.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
+    Route::patch('budgets/{budget}/publication', [BudgetController::class, 'updatePublication'])->name('budgets.publication.update');
     Route::resource('budgets', BudgetController::class);
     Route::get('budgets/{budget}/items/create', [BudgetItemController::class, 'create'])->name('budgets.items.create');
     Route::post('budgets/{budget}/items', [BudgetItemController::class, 'store'])->name('budgets.items.store');

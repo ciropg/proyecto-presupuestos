@@ -31,4 +31,9 @@ class BudgetPolicy
     {
         return $user->isAdmin() || $budget->user_id === $user->id;
     }
+
+    public function publish(User $user, Budget $budget): bool
+    {
+        return $this->update($user, $budget);
+    }
 }

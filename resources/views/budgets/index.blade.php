@@ -56,6 +56,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Title') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Date') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Status') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Visibility') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Owner') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Total') }}</th>
                                 <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Actions') }}</th>
@@ -68,6 +69,11 @@
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $budget->title }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $budget->budget_date?->format('Y-m-d') ?? '-' }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $statuses[$budget->status] ?? ucfirst($budget->status) }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-600">
+                                        <span class="{{ $budget->isPubliclyVisible() ? 'border-green-200 bg-green-50 text-green-700' : 'border-gray-200 bg-gray-100 text-gray-700' }} inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+                                            {{ $budget->isPubliclyVisible() ? __('Published') : __('Private') }}
+                                        </span>
+                                    </td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $budget->user->name }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ number_format((float) $budget->total_cost, 2) }}</td>
                                     <td class="px-6 py-4">
@@ -78,6 +84,30 @@
                                             >
                                                 {{ __('View') }}
                                             </a>
+
+                                            @if ($budget->isPubliclyVisible())
+                                                <a
+                                                    href="{{ route('budgets.public.show', $budget) }}"
+                                                    class="inline-flex items-center rounded-md border border-green-300 bg-green-50 px-3 py-2 text-xs font-semibold uppercase tracking-widest text-green-700 transition hover:bg-green-100"
+                                                >
+                                                    {{ __('Public View') }}
+                                                </a>
+                                            @endif
+
+                                            @can('publish', $budget)
+                                                <form method="POST" action="{{ route('budgets.publication.update', $budget) }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="published" value="{{ $budget->isPubliclyVisible() ? 0 : 1 }}">
+
+                                                    <button
+                                                        type="submit"
+                                                        class="{{ $budget->isPubliclyVisible() ? 'bg-amber-600 hover:bg-amber-500' : 'bg-green-600 hover:bg-green-500' }} inline-flex items-center rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-widest text-white transition"
+                                                    >
+                                                        {{ $budget->isPubliclyVisible() ? __('Unpublish') : __('Publish') }}
+                                                    </button>
+                                                </form>
+                                            @endcan
 
                                             @can('update', $budget)
                                                 <a
@@ -112,7 +142,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-10 text-center text-sm text-gray-500">
+                                    <td colspan="8" class="px-6 py-10 text-center text-sm text-gray-500">
                                         <div class="space-y-3">
                                             <p>{{ __('No budgets found.') }}</p>
                                             <a
