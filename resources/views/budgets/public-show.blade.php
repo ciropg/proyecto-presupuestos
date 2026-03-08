@@ -95,6 +95,65 @@
                             </p>
                         </div>
 
+                        <div class="rounded-2xl border border-gray-200 p-6">
+                            <div class="flex flex-col gap-2 border-b border-gray-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">{{ __('Associated Items') }}</p>
+                                    <p class="mt-2 text-lg font-semibold text-gray-900">{{ __('Budget breakdown') }}</p>
+                                </div>
+
+                                <p class="text-sm text-gray-500">
+                                    {{ __('All items currently associated with this published budget.') }}
+                                </p>
+                            </div>
+
+                            @if ($budget->budgetItems->isNotEmpty())
+                                <div class="mt-6 overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Item') }}</th>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Category') }}</th>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Unit') }}</th>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Quantity') }}</th>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Unit Price') }}</th>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Subtotal') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200 bg-white">
+                                            @foreach ($budget->budgetItems as $budgetItem)
+                                                <tr>
+                                                    <td class="px-4 py-4 text-sm text-gray-900">
+                                                        <div class="font-medium">{{ $budgetItem->resource?->name ?? $budgetItem->name }}</div>
+                                                        <div class="mt-1 text-gray-500">{{ $budgetItem->description ?: '-' }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-sm text-gray-600">{{ $budgetItem->resource?->category?->name ?? __('Manual item') }}</td>
+                                                    <td class="px-4 py-4 text-sm text-gray-600">{{ $budgetItem->unit->name }} ({{ $budgetItem->unit->symbol }})</td>
+                                                    <td class="px-4 py-4 text-sm text-gray-600">{{ number_format((float) $budgetItem->quantity, 4) }}</td>
+                                                    <td class="px-4 py-4 text-sm text-gray-600">{{ number_format((float) $budgetItem->unit_price, 2) }}</td>
+                                                    <td class="px-4 py-4 text-sm font-semibold text-gray-900">{{ number_format((float) $budgetItem->subtotal, 2) }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot class="bg-gray-50">
+                                            <tr>
+                                                <td colspan="5" class="px-4 py-4 text-right text-sm font-semibold uppercase tracking-wider text-gray-500">
+                                                    {{ __('Total General') }}
+                                                </td>
+                                                <td class="px-4 py-4 text-sm font-semibold text-gray-900">
+                                                    {{ number_format((float) $budget->total_cost, 2) }}
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="mt-6 rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-8 text-center text-sm text-gray-600">
+                                    {{ __('This published budget does not have associated items yet.') }}
+                                </div>
+                            @endif
+                        </div>
+
                         <div class="rounded-2xl border border-blue-200 bg-blue-50 p-6 text-sm text-blue-900">
                             {{ __('This page only exposes the public summary of the budget. Administrative actions and private management tools remain protected inside the authenticated module.') }}
                         </div>

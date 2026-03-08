@@ -3,6 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Budget;
+use App\Models\BudgetItem;
+use App\Models\Category;
+use App\Models\Resource;
+use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -47,11 +51,41 @@ class PublicBudgetPublicationTest extends TestCase
             Budget::STATUS_PUBLISHED,
             true,
         );
+        $unit = Unit::query()->create([
+            'name' => 'Kilogram',
+            'symbol' => 'kg',
+        ]);
+        $category = Category::query()->create([
+            'name' => 'Materials',
+            'description' => 'Materials description',
+        ]);
+        $resource = Resource::query()->create([
+            'category_id' => $category->id,
+            'unit_id' => $unit->id,
+            'name' => 'Cement',
+            'description' => 'Cement description',
+            'unit_price' => 25.50,
+        ]);
+
+        BudgetItem::query()->create([
+            'budget_id' => $publishedBudget->id,
+            'resource_id' => $resource->id,
+            'unit_id' => $unit->id,
+            'name' => $resource->name,
+            'description' => 'Main material',
+            'quantity' => 3,
+            'unit_price' => 25.50,
+            'subtotal' => 76.50,
+        ]);
 
         $this->get(route('budgets.public.show', $publishedBudget))
             ->assertOk()
             ->assertSee($publishedBudget->title)
             ->assertSee($publishedBudget->code)
+            ->assertSee('Cement')
+            ->assertSee('Main material')
+            ->assertSee('Materials')
+            ->assertSee('76.50')
             ->assertDontSee('Edit Budget');
     }
 

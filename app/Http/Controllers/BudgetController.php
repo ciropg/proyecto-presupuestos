@@ -33,7 +33,10 @@ class BudgetController extends Controller
     {
         abort_unless($budget->isPubliclyVisible(), 404);
 
-        $budget->loadCount('budgetItems');
+        $budget->load([
+            'budgetItems.resource.category',
+            'budgetItems.unit',
+        ])->loadCount('budgetItems');
 
         return view('budgets.public-show', [
             'budget' => $budget,
