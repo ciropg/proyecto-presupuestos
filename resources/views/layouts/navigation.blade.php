@@ -20,6 +20,14 @@
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Admin') }}
                         </x-nav-link>
+
+                        <x-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">
+                            {{ __('Categories') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('admin.units.index')" :active="request()->routeIs('admin.units.*')">
+                            {{ __('Units') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -80,6 +88,14 @@
             @if (Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Admin') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">
+                    {{ __('Categories') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('admin.units.index')" :active="request()->routeIs('admin.units.*')">
+                    {{ __('Units') }}
                 </x-responsive-nav-link>
             @endif
         </div>

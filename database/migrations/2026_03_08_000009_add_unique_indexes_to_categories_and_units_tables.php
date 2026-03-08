@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('categories', function (Blueprint $table) {
+            $table->unique('name');
+        });
+
+        Schema::table('units', function (Blueprint $table) {
+            $table->unique('name');
+            $table->unique('symbol');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropUnique('categories_name_unique');
+        });
+
+        Schema::table('units', function (Blueprint $table) {
+            $table->dropUnique('units_name_unique');
+            $table->dropUnique('units_symbol_unique');
+        });
+    }
+};
