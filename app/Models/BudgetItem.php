@@ -18,6 +18,7 @@ class BudgetItem extends Model
      */
     protected $fillable = [
         'budget_id',
+        'resource_id',
         'unit_id',
         'name',
         'description',
@@ -43,6 +44,11 @@ class BudgetItem extends Model
     public function budget(): BelongsTo
     {
         return $this->belongsTo(Budget::class);
+    }
+
+    public function resource(): BelongsTo
+    {
+        return $this->belongsTo(Resource::class);
     }
 
     public function unit(): BelongsTo

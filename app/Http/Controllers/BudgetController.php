@@ -60,7 +60,11 @@ class BudgetController extends Controller
     {
         $this->authorize('view', $budget);
 
-        $budget->load('user');
+        $budget->load([
+            'user',
+            'budgetItems.resource.category',
+            'budgetItems.unit',
+        ]);
 
         return view('budgets.show', compact('budget'));
     }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Budget extends Model
 {
@@ -65,5 +66,16 @@ class Budget extends Model
     public function budgetItems(): HasMany
     {
         return $this->hasMany(BudgetItem::class);
+    }
+
+    public function recalculateTotalCost(): void
+    {
+        $total = $this->budgetItems()
+            ->select(DB::raw('COALESCE(SUM(subtotal), 0) as total'))
+            ->value('total');
+
+        $this->forceFill([
+            'total_cost' => $total,
+        ])->saveQuietly();
     }
 }

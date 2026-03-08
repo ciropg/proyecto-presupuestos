@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\BudgetItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResourceController;
@@ -17,6 +18,11 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     Route::resource('budgets', BudgetController::class);
+    Route::get('budgets/{budget}/items/create', [BudgetItemController::class, 'create'])->name('budgets.items.create');
+    Route::post('budgets/{budget}/items', [BudgetItemController::class, 'store'])->name('budgets.items.store');
+    Route::get('budgets/{budget}/items/{budgetItem}/edit', [BudgetItemController::class, 'edit'])->name('budgets.items.edit');
+    Route::put('budgets/{budget}/items/{budgetItem}', [BudgetItemController::class, 'update'])->name('budgets.items.update');
+    Route::delete('budgets/{budget}/items/{budgetItem}', [BudgetItemController::class, 'destroy'])->name('budgets.items.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

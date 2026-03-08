@@ -46,6 +46,11 @@ class Resource extends Model
         return $this->belongsTo(Unit::class);
     }
 
+    public function budgetItems(): HasMany
+    {
+        return $this->hasMany(BudgetItem::class);
+    }
+
     public function itemBreakdowns(): HasMany
     {
         return $this->hasMany(ItemBreakdown::class);
