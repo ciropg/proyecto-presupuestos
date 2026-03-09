@@ -19,7 +19,10 @@ class ResourceManagementTest extends TestCase
             'role' => User::ROLE_ADMIN,
         ]);
 
-        $this->actingAs($admin)->get(route('admin.resources.index'))->assertOk();
+        $this->actingAs($admin)
+            ->get(route('admin.resources.index'))
+            ->assertOk()
+            ->assertSee('N.º');
     }
 
     public function test_a_regular_user_cannot_access_the_resources_module(): void

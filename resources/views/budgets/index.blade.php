@@ -52,6 +52,7 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('No.') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Code') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Title') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Date') }}</th>
@@ -65,6 +66,7 @@
                         <tbody class="divide-y divide-gray-200 bg-white">
                             @forelse ($budgets as $budget)
                                 <tr>
+                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $budgets->firstItem() + $loop->index }}</td>
                                     <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $budget->code }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $budget->title }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ $budget->budget_date?->format('Y-m-d') ?? '-' }}</td>
@@ -142,7 +144,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-10 text-center text-sm text-gray-500">
+                                    <td colspan="9" class="px-6 py-10 text-center text-sm text-gray-500">
                                         <div class="space-y-3">
                                             <p>{{ __('No budgets found.') }}</p>
                                             <a

@@ -27,7 +27,7 @@ class DashboardAccessTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('Welcome back')
+            ->assertSee('Bienvenido de nuevo')
             ->assertSee($user->name)
             ->assertSee($user->email)
             ->assertSee($user->role);

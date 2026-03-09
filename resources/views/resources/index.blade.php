@@ -23,6 +23,7 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('No.') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Name') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Category') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Unit') }}</th>
@@ -33,6 +34,7 @@
                         <tbody class="divide-y divide-gray-200 bg-white">
                             @forelse ($resources as $resource)
                                 <tr>
+                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $resources->firstItem() + $loop->index }}</td>
                                     <td class="px-6 py-4 text-sm font-medium text-gray-900">
                                         <div>{{ $resource->name }}</div>
                                         @if ($resource->description)
@@ -68,7 +70,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500">
+                                    <td colspan="6" class="px-6 py-10 text-center text-sm text-gray-500">
                                         {{ __('No resources found.') }}
                                     </td>
                                 </tr>

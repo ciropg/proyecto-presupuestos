@@ -16,8 +16,15 @@ class CatalogManagementTest extends TestCase
             'role' => User::ROLE_ADMIN,
         ]);
 
-        $this->actingAs($admin)->get(route('admin.categories.index'))->assertOk();
-        $this->actingAs($admin)->get(route('admin.units.index'))->assertOk();
+        $this->actingAs($admin)
+            ->get(route('admin.categories.index'))
+            ->assertOk()
+            ->assertSee('N.º');
+
+        $this->actingAs($admin)
+            ->get(route('admin.units.index'))
+            ->assertOk()
+            ->assertSee('N.º');
     }
 
     public function test_a_regular_user_cannot_access_categories_or_units(): void

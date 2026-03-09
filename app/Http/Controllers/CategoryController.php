@@ -31,7 +31,7 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('admin.categories.index')
-            ->with('success', 'Category created successfully.');
+            ->with('success', __('Category created successfully.'));
     }
 
     public function edit(Category $category): View
@@ -45,7 +45,7 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('admin.categories.index')
-            ->with('success', 'Category updated successfully.');
+            ->with('success', __('Category updated successfully.'));
     }
 
     public function destroy(Category $category): RedirectResponse
@@ -55,11 +55,11 @@ class CategoryController extends Controller
         } catch (QueryException) {
             return redirect()
                 ->route('admin.categories.index')
-                ->with('error', 'Category could not be deleted because it is in use.');
+                ->with('error', __('Category could not be deleted because it is in use.'));
         }
 
         return redirect()
             ->route('admin.categories.index')
-            ->with('success', 'Category deleted successfully.');
+            ->with('success', __('Category deleted successfully.'));
     }
 }

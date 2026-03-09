@@ -83,7 +83,7 @@ class BudgetController extends Controller
 
         return redirect()
             ->route('budgets.index')
-            ->with('success', 'Budget created successfully.');
+            ->with('success', __('Budget created successfully.'));
     }
 
     public function show(Budget $budget): View
@@ -120,7 +120,7 @@ class BudgetController extends Controller
 
         return redirect()
             ->route('budgets.index')
-            ->with('success', 'Budget updated successfully.');
+            ->with('success', __('Budget updated successfully.'));
     }
 
     public function updatePublication(Request $request, Budget $budget): RedirectResponse
@@ -140,8 +140,8 @@ class BudgetController extends Controller
             ->with(
                 'success',
                 $shouldPublish
-                    ? 'Budget published successfully.'
-                    : 'Budget unpublished successfully.'
+                    ? __('Budget published successfully.')
+                    : __('Budget unpublished successfully.')
             );
     }
 
@@ -154,12 +154,12 @@ class BudgetController extends Controller
         } catch (QueryException) {
             return redirect()
                 ->route('budgets.index')
-                ->with('error', 'Budget could not be deleted because it is in use.');
+                ->with('error', __('Budget could not be deleted because it is in use.'));
         }
 
         return redirect()
             ->route('budgets.index')
-            ->with('success', 'Budget deleted successfully.');
+            ->with('success', __('Budget deleted successfully.'));
     }
 
     /**

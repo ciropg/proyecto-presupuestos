@@ -29,7 +29,7 @@ class RoleAuthorizationTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('Administrator access granted')
+            ->assertSee('Acceso de administrador concedido')
             ->assertSee($admin->email);
     }
 

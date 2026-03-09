@@ -54,13 +54,13 @@ class UpdateBudgetItemRequest extends FormRequest
                 }
 
                 if ($parentId === $budgetItem->id) {
-                    $validator->errors()->add('parent_id', 'An item cannot be its own parent.');
+                    $validator->errors()->add('parent_id', __('An item cannot be its own parent.'));
 
                     return;
                 }
 
                 if ($this->isDescendant($budgetItem, $parentId)) {
-                    $validator->errors()->add('parent_id', 'An item cannot be assigned to one of its descendants.');
+                    $validator->errors()->add('parent_id', __('An item cannot be assigned to one of its descendants.'));
                 }
             },
         ];

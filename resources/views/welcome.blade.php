@@ -53,31 +53,31 @@
             </header>
 
             <main class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-                <section class="overflow-hidden rounded-3xl bg-slate-900 px-6 py-10 text-white shadow-xl sm:px-10">
+                <section class="overflow-hidden rounded-3xl border border-gray-200 bg-white px-6 py-10 shadow-sm sm:px-10">
                     <div class="grid gap-8 lg:grid-cols-[1.6fr_0.8fr] lg:items-end">
                         <div class="space-y-4">
-                            <span class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-200">
+                            <span class="inline-flex rounded-full border border-gray-200 bg-gray-50 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-gray-600">
                                 {{ __('Published Budgets') }}
                             </span>
                             <div class="space-y-3">
-                                <h2 class="text-3xl font-semibold leading-tight sm:text-4xl">
+                                <h2 class="text-3xl font-semibold leading-tight text-gray-900 sm:text-4xl">
                                     {{ __('Public consultation of approved budgets') }}
                                 </h2>
-                                <p class="max-w-2xl text-sm leading-6 text-slate-200 sm:text-base">
+                                <p class="max-w-2xl text-sm leading-6 text-gray-600 sm:text-base">
                                     {{ __('Browse only the budgets that have been explicitly published by authorized users. Drafts and private records remain hidden from this public page.') }}
                                 </p>
                             </div>
                         </div>
 
                         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-                            <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-                                <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">{{ __('Visible Budgets') }}</p>
-                                <p class="mt-3 text-3xl font-semibold text-white">{{ $budgets->total() }}</p>
+                            <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                                <p class="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">{{ __('Visible Budgets') }}</p>
+                                <p class="mt-3 text-3xl font-semibold text-gray-900">{{ $budgets->total() }}</p>
                             </div>
 
-                            <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-                                <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">{{ __('Access') }}</p>
-                                <p class="mt-3 text-sm leading-6 text-slate-100">{{ __('No login required to review public summaries and detail pages.') }}</p>
+                            <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                                <p class="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">{{ __('Access') }}</p>
+                                <p class="mt-3 text-sm leading-6 text-gray-600">{{ __('No login required to review public summaries and detail pages.') }}</p>
                             </div>
                         </div>
                     </div>

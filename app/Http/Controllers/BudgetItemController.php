@@ -45,7 +45,7 @@ class BudgetItemController extends Controller
 
         return redirect()
             ->route('budgets.show', $budget)
-            ->with('success', 'Budget item added successfully.');
+            ->with('success', __('Budget item added successfully.'));
     }
 
     public function edit(Budget $budget, BudgetItem $budgetItem): View
@@ -78,7 +78,7 @@ class BudgetItemController extends Controller
 
         return redirect()
             ->route('budgets.show', $budget)
-            ->with('success', 'Budget item updated successfully.');
+            ->with('success', __('Budget item updated successfully.'));
     }
 
     public function destroy(Budget $budget, BudgetItem $budgetItem): RedirectResponse
@@ -92,7 +92,7 @@ class BudgetItemController extends Controller
 
         return redirect()
             ->route('budgets.show', $budget)
-            ->with('success', 'Budget item deleted successfully.');
+            ->with('success', __('Budget item deleted successfully.'));
     }
 
     /**

@@ -31,7 +31,7 @@ class UnitController extends Controller
 
         return redirect()
             ->route('admin.units.index')
-            ->with('success', 'Unit created successfully.');
+            ->with('success', __('Unit created successfully.'));
     }
 
     public function edit(Unit $unit): View
@@ -45,7 +45,7 @@ class UnitController extends Controller
 
         return redirect()
             ->route('admin.units.index')
-            ->with('success', 'Unit updated successfully.');
+            ->with('success', __('Unit updated successfully.'));
     }
 
     public function destroy(Unit $unit): RedirectResponse
@@ -55,11 +55,11 @@ class UnitController extends Controller
         } catch (QueryException) {
             return redirect()
                 ->route('admin.units.index')
-                ->with('error', 'Unit could not be deleted because it is in use.');
+                ->with('error', __('Unit could not be deleted because it is in use.'));
         }
 
         return redirect()
             ->route('admin.units.index')
-            ->with('success', 'Unit deleted successfully.');
+            ->with('success', __('Unit deleted successfully.'));
     }
 }

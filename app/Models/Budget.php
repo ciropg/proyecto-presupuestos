@@ -66,9 +66,9 @@ class Budget extends Model
     public static function statusOptions(): array
     {
         return [
-            self::STATUS_DRAFT => 'Draft',
-            self::STATUS_PUBLISHED => 'Published',
-            self::STATUS_CANCELLED => 'Cancelled',
+            self::STATUS_DRAFT => __('Draft'),
+            self::STATUS_PUBLISHED => __('Published'),
+            self::STATUS_CANCELLED => __('Cancelled'),
         ];
     }
 

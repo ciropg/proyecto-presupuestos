@@ -99,6 +99,7 @@ class BudgetManagementTest extends TestCase
         $this->actingAs($admin)
             ->get(route('budgets.index'))
             ->assertOk()
+            ->assertSee('N.º')
             ->assertSee('Budget One')
             ->assertSee('Budget Two');
     }
@@ -136,8 +137,9 @@ class BudgetManagementTest extends TestCase
         $this->actingAs($user)
             ->get(route('budgets.index'))
             ->assertOk()
+            ->assertSee('N.º')
             ->assertSee('My Budget')
-            ->assertSee('Add Item')
+            ->assertSee('Agregar ítem')
             ->assertSee(route('budgets.items.create', $user->budgets()->first()), false)
             ->assertDontSee('Other Budget');
     }

@@ -98,13 +98,13 @@ class PublicBudgetPublicationTest extends TestCase
             ->assertOk()
             ->assertSee($publishedBudget->title)
             ->assertSee($publishedBudget->code)
-            ->assertSee('No.')
+            ->assertSee('N.º')
             ->assertSee('1.1')
             ->assertSee('Cement')
             ->assertSee('Main material')
             ->assertSee('Materials')
             ->assertSee('76.50')
-            ->assertDontSee('Edit Budget');
+            ->assertDontSee('Editar presupuesto');
     }
 
     public function test_public_budget_detail_returns_not_found_for_unpublished_budgets(): void
@@ -147,7 +147,7 @@ class PublicBudgetPublicationTest extends TestCase
                 'published' => true,
             ])
             ->assertRedirect(route('budgets.show', $budget))
-            ->assertSessionHas('success', 'Budget published successfully.');
+            ->assertSessionHas('success', 'Presupuesto publicado correctamente.');
 
         $budget->refresh();
 
@@ -159,7 +159,7 @@ class PublicBudgetPublicationTest extends TestCase
                 'published' => false,
             ])
             ->assertRedirect(route('budgets.show', $budget))
-            ->assertSessionHas('success', 'Budget unpublished successfully.');
+            ->assertSessionHas('success', 'Presupuesto ocultado correctamente.');
 
         $budget->refresh();
 

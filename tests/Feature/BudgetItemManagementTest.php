@@ -434,13 +434,13 @@ class BudgetItemManagementTest extends TestCase
         $this->actingAs($user)
             ->get(route('budgets.show', $budget))
             ->assertOk()
-            ->assertSee('No.')
+            ->assertSee('N.º')
             ->assertSee($parentItem->name)
             ->assertSee($childItem->name)
             ->assertSee($secondRootItem->name)
             ->assertSee('1.1')
-            ->assertSee('Add Subitem')
-            ->assertSee('Toggle subitems');
+            ->assertSee('Agregar subítem')
+            ->assertSee('Alternar subítems');
     }
 
     public function test_parent_subtotals_and_budget_totals_are_recalculated_from_children(): void

@@ -34,7 +34,7 @@ class ResourceController extends Controller
 
         return redirect()
             ->route('admin.resources.index')
-            ->with('success', 'Resource created successfully.');
+            ->with('success', __('Resource created successfully.'));
     }
 
     public function edit(Resource $resource): View
@@ -51,7 +51,7 @@ class ResourceController extends Controller
 
         return redirect()
             ->route('admin.resources.index')
-            ->with('success', 'Resource updated successfully.');
+            ->with('success', __('Resource updated successfully.'));
     }
 
     public function destroy(Resource $resource): RedirectResponse
@@ -61,12 +61,12 @@ class ResourceController extends Controller
         } catch (QueryException) {
             return redirect()
                 ->route('admin.resources.index')
-                ->with('error', 'Resource could not be deleted because it is in use.');
+                ->with('error', __('Resource could not be deleted because it is in use.'));
         }
 
         return redirect()
             ->route('admin.resources.index')
-            ->with('success', 'Resource deleted successfully.');
+            ->with('success', __('Resource deleted successfully.'));
     }
 
     /**
