@@ -155,6 +155,30 @@ class BudgetManagementTest extends TestCase
         ]);
     }
 
+    public function test_a_regular_user_cannot_view_someone_elses_budget_detail(): void
+    {
+        $user = User::factory()->create([
+            'role' => User::ROLE_USER,
+        ]);
+        $otherUser = User::factory()->create([
+            'role' => User::ROLE_USER,
+        ]);
+        $budget = Budget::query()->create([
+            'user_id' => $otherUser->id,
+            'code' => 'BGT-302',
+            'title' => 'Private Budget',
+            'description' => null,
+            'budget_date' => '2026-03-08',
+            'status' => Budget::STATUS_DRAFT,
+            'is_published' => false,
+            'total_cost' => 0,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('budgets.show', $budget))
+            ->assertForbidden();
+    }
+
     public function test_budget_validation_fails_when_required_fields_are_missing(): void
     {
         $user = User::factory()->create([
