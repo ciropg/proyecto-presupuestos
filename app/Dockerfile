@@ -8,6 +8,14 @@ RUN composer install \
     --optimize-autoloader \
     --no-interaction
 
+FROM node:20 AS node
+
+WORKDIR /app
+COPY . /app
+
+RUN npm install
+RUN npm run build
+
 FROM php:8.4-apache
 
 RUN apt-get update && apt-get install -y \
@@ -26,6 +34,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/html
 
 COPY --from=composer /app /var/www/html
+COPY --from=node /app/public/build /var/www/html/public/build
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
