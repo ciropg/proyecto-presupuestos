@@ -50,9 +50,4 @@ class Resource extends Model
     {
         return $this->hasMany(BudgetItem::class);
     }
-
-    public function itemBreakdowns(): HasMany
-    {
-        return $this->hasMany(ItemBreakdown::class);
-    }
 }

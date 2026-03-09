@@ -11,7 +11,7 @@
                         href="{{ route('budgets.items.create', $budget) }}"
                         class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 transition hover:bg-gray-50"
                     >
-                        {{ __('Add Item') }}
+                        {{ __('Add Root Item') }}
                     </a>
 
                     <a
@@ -44,6 +44,7 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
             @include('partials.flash-messages')
+            <style>[x-cloak]{display:none!important;}</style>
 
             <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                 <div class="p-6 space-y-4 text-gray-900">
@@ -143,17 +144,25 @@
                                 href="{{ route('budgets.items.create', $budget) }}"
                                 class="inline-flex items-center rounded-md bg-gray-900 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-gray-700"
                             >
-                                {{ __('Add Item') }}
+                                {{ __('Add Root Item') }}
                             </a>
                         @endcan
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
+                <div
+                    x-data="{
+                        expanded: {},
+                        toggle(id) {
+                            this.expanded[id] = !(this.expanded[id] ?? false);
+                        },
+                    }"
+                    class="overflow-x-auto"
+                >
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Resource') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Item') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Category') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Unit') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Quantity') }}</th>
@@ -163,43 +172,14 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
-                            @forelse ($budget->budgetItems as $budgetItem)
-                                <tr>
-                                    <td class="px-6 py-4 text-sm text-gray-900">
-                                        <div class="font-medium">{{ $budgetItem->resource?->name ?? $budgetItem->name }}</div>
-                                        <div class="mt-1 text-gray-500">{{ $budgetItem->description ?: '-' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $budgetItem->resource?->category?->name ?? __('Manual item') }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $budgetItem->unit->name }} ({{ $budgetItem->unit->symbol }})</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ number_format((float) $budgetItem->quantity, 4) }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ number_format((float) $budgetItem->unit_price, 2) }}</td>
-                                    <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ number_format((float) $budgetItem->subtotal, 2) }}</td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex justify-end gap-2">
-                                            @can('update', $budget)
-                                                <a
-                                                    href="{{ route('budgets.items.edit', [$budget, $budgetItem]) }}"
-                                                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 transition hover:bg-gray-50"
-                                                >
-                                                    {{ __('Edit') }}
-                                                </a>
-
-                                                <form method="POST" action="{{ route('budgets.items.destroy', [$budget, $budgetItem]) }}">
-                                                    @csrf
-                                                    @method('DELETE')
-
-                                                    <button
-                                                        type="submit"
-                                                        class="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-500"
-                                                        onclick="return confirm('{{ __('Delete this item?') }}')"
-                                                    >
-                                                        {{ __('Delete') }}
-                                                    </button>
-                                                </form>
-                                            @endcan
-                                        </div>
-                                    </td>
-                                </tr>
+                            @forelse ($budget->rootItems as $budgetItem)
+                                @include('budgets.partials.hierarchy-row', [
+                                    'budget' => $budget,
+                                    'budgetItem' => $budgetItem,
+                                    'depth' => 0,
+                                    'ancestorIds' => [],
+                                    'showActions' => true,
+                                ])
                             @empty
                                 <tr>
                                     <td colspan="7" class="px-6 py-10 text-center text-sm text-gray-500">

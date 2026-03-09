@@ -10,6 +10,9 @@ class ItemBreakdown extends Model
 {
     use HasFactory;
 
+    // Legacy table retained for backward compatibility. New hierarchical
+    // breakdowns are now represented as child records in budget_items.
+
     /**
      * The attributes that are mass assignable.
      *

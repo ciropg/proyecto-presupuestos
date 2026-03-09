@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class Budget extends Model
 {
@@ -63,9 +63,19 @@ class Budget extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function budgetItems(): HasMany
+    public function items(): HasMany
     {
         return $this->hasMany(BudgetItem::class);
+    }
+
+    public function budgetItems(): HasMany
+    {
+        return $this->items();
+    }
+
+    public function rootItems(): HasMany
+    {
+        return $this->items()->rootItems()->ordered();
     }
 
     public function scopePublished($query)
@@ -82,12 +92,47 @@ class Budget extends Model
 
     public function recalculateTotalCost(): void
     {
-        $total = $this->budgetItems()
-            ->select(DB::raw('COALESCE(SUM(subtotal), 0) as total'))
-            ->value('total');
+        $items = $this->items()->ordered()->get();
+        $itemsByParent = $items->groupBy(fn (BudgetItem $item) => $item->parent_id ?? 0);
+
+        $total = $itemsByParent
+            ->get(0, collect())
+            ->sum(fn (BudgetItem $item) => $this->calculateItemSubtotal($item, $itemsByParent));
 
         $this->forceFill([
-            'total_cost' => $total,
+            'total_cost' => round($total, 2),
         ])->saveQuietly();
+    }
+
+    /**
+     * @param  Collection<int|string, Collection<int, BudgetItem>>  $itemsByParent
+     * @param  array<int, bool>  $path
+     */
+    private function calculateItemSubtotal(BudgetItem $item, Collection $itemsByParent, array $path = []): float
+    {
+        if (isset($path[$item->id])) {
+            return 0.0;
+        }
+
+        $path[$item->id] = true;
+        $children = $itemsByParent->get($item->id, collect());
+
+        if ($children->isNotEmpty()) {
+            $subtotal = $children->sum(
+                fn (BudgetItem $child) => $this->calculateItemSubtotal($child, $itemsByParent, $path)
+            );
+        } else {
+            $subtotal = (float) $item->quantity * (float) $item->unit_price;
+        }
+
+        $subtotal = round($subtotal, 2);
+
+        if ((float) $item->subtotal !== $subtotal) {
+            $item->forceFill([
+                'subtotal' => $subtotal,
+            ])->saveQuietly();
+        }
+
+        return $subtotal;
     }
 }

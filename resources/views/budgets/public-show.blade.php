@@ -50,6 +50,7 @@
             </header>
 
             <main class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+                <style>[x-cloak]{display:none!important;}</style>
                 <section class="overflow-hidden rounded-3xl bg-white shadow-sm">
                     <div class="border-b border-gray-200 bg-slate-900 px-6 py-8 text-white sm:px-10">
                         <div class="flex flex-wrap items-start justify-between gap-6">
@@ -107,8 +108,16 @@
                                 </p>
                             </div>
 
-                            @if ($budget->budgetItems->isNotEmpty())
-                                <div class="mt-6 overflow-x-auto">
+                            @if ($budget->rootItems->isNotEmpty())
+                                <div
+                                    x-data="{
+                                        expanded: {},
+                                        toggle(id) {
+                                            this.expanded[id] = !(this.expanded[id] ?? false);
+                                        },
+                                    }"
+                                    class="mt-6 overflow-x-auto"
+                                >
                                     <table class="min-w-full divide-y divide-gray-200">
                                         <thead class="bg-gray-50">
                                             <tr>
@@ -121,18 +130,14 @@
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-gray-200 bg-white">
-                                            @foreach ($budget->budgetItems as $budgetItem)
-                                                <tr>
-                                                    <td class="px-4 py-4 text-sm text-gray-900">
-                                                        <div class="font-medium">{{ $budgetItem->resource?->name ?? $budgetItem->name }}</div>
-                                                        <div class="mt-1 text-gray-500">{{ $budgetItem->description ?: '-' }}</div>
-                                                    </td>
-                                                    <td class="px-4 py-4 text-sm text-gray-600">{{ $budgetItem->resource?->category?->name ?? __('Manual item') }}</td>
-                                                    <td class="px-4 py-4 text-sm text-gray-600">{{ $budgetItem->unit->name }} ({{ $budgetItem->unit->symbol }})</td>
-                                                    <td class="px-4 py-4 text-sm text-gray-600">{{ number_format((float) $budgetItem->quantity, 4) }}</td>
-                                                    <td class="px-4 py-4 text-sm text-gray-600">{{ number_format((float) $budgetItem->unit_price, 2) }}</td>
-                                                    <td class="px-4 py-4 text-sm font-semibold text-gray-900">{{ number_format((float) $budgetItem->subtotal, 2) }}</td>
-                                                </tr>
+                                            @foreach ($budget->rootItems as $budgetItem)
+                                                @include('budgets.partials.hierarchy-row', [
+                                                    'budget' => $budget,
+                                                    'budgetItem' => $budgetItem,
+                                                    'depth' => 0,
+                                                    'ancestorIds' => [],
+                                                    'showActions' => false,
+                                                ])
                                             @endforeach
                                         </tbody>
                                         <tfoot class="bg-gray-50">

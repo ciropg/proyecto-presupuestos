@@ -1,5 +1,6 @@
 @php
     $item = $budgetItem ?? null;
+    $selectedParentId = (string) ($selectedParentId ?? old('parent_id', $item?->parent_id ?? ''));
     $selectedResourceId = (string) old('resource_id', $item?->resource_id ?? '');
     $selectedUnitId = (string) old('unit_id', $item?->unit_id ?? '');
     $resourceData = $resources
@@ -60,7 +61,28 @@
 >
     <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
         <p><span class="font-medium">{{ __('Budget') }}:</span> {{ $budget->code }} - {{ $budget->title }}</p>
-        <p class="mt-1">{{ __('You can link the item to a catalog resource or register it manually with its own name, unit, quantity and price.') }}</p>
+        @if ($parentItem)
+            <p class="mt-1"><span class="font-medium">{{ __('Parent item') }}:</span> {{ $parentItem->name }}</p>
+        @endif
+        <p class="mt-1">{{ __('You can create a root item or assign it under another item as a subitem. If the item later has children, its visible subtotal is calculated from those children.') }}</p>
+    </div>
+
+    <div>
+        <x-input-label for="parent_id" :value="__('Parent Item')" />
+        <select
+            id="parent_id"
+            name="parent_id"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        >
+            <option value="">{{ __('Root item / No parent') }}</option>
+            @foreach ($parentOptions as $parentOption)
+                <option value="{{ $parentOption['id'] }}" @selected($selectedParentId === (string) $parentOption['id'])>
+                    {{ $parentOption['label'] }}
+                </option>
+            @endforeach
+        </select>
+        <p class="mt-1 text-xs text-gray-500">{{ __('Leave this empty to keep the item at the top level of the budget.') }}</p>
+        <x-input-error class="mt-2" :messages="$errors->get('parent_id')" />
     </div>
 
     <div>

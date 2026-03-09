@@ -18,6 +18,7 @@ class BudgetItem extends Model
      */
     protected $fillable = [
         'budget_id',
+        'parent_id',
         'resource_id',
         'unit_id',
         'name',
@@ -25,6 +26,7 @@ class BudgetItem extends Model
         'quantity',
         'unit_price',
         'subtotal',
+        'sort_order',
     ];
 
     /**
@@ -35,15 +37,36 @@ class BudgetItem extends Model
     protected function casts(): array
     {
         return [
+            'parent_id' => 'integer',
             'quantity' => 'decimal:4',
             'unit_price' => 'decimal:2',
             'subtotal' => 'decimal:2',
+            'sort_order' => 'integer',
         ];
     }
 
     public function budget(): BelongsTo
     {
         return $this->belongsTo(Budget::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')->ordered();
+    }
+
+    public function childrenRecursive(): HasMany
+    {
+        return $this->children()->with([
+            'resource.category',
+            'unit',
+            'childrenRecursive',
+        ]);
     }
 
     public function resource(): BelongsTo
@@ -56,8 +79,18 @@ class BudgetItem extends Model
         return $this->belongsTo(Unit::class);
     }
 
-    public function itemBreakdowns(): HasMany
+    public function scopeRootItems($query)
     {
-        return $this->hasMany(ItemBreakdown::class);
+        return $query->whereNull('parent_id');
+    }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderByRaw('COALESCE(sort_order, id), id');
+    }
+
+    public function hasChildren(): bool
+    {
+        return $this->children->isNotEmpty();
     }
 }

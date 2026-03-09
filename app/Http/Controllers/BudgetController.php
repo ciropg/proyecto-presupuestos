@@ -34,9 +34,10 @@ class BudgetController extends Controller
         abort_unless($budget->isPubliclyVisible(), 404);
 
         $budget->load([
-            'budgetItems.resource.category',
-            'budgetItems.unit',
-        ])->loadCount('budgetItems');
+            'rootItems.resource.category',
+            'rootItems.unit',
+            'rootItems.childrenRecursive',
+        ])->loadCount(['items as budget_items_count']);
 
         return view('budgets.public-show', [
             'budget' => $budget,
@@ -91,8 +92,9 @@ class BudgetController extends Controller
 
         $budget->load([
             'user',
-            'budgetItems.resource.category',
-            'budgetItems.unit',
+            'rootItems.resource.category',
+            'rootItems.unit',
+            'rootItems.childrenRecursive',
         ]);
 
         return view('budgets.show', compact('budget'));
