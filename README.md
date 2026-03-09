@@ -1,59 +1,201 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Proyecto Presupuestos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicacion web construida con Laravel para gestionar presupuestos, catalogos de recursos y publicacion de presupuestos para consulta publica. El sistema distingue entre usuarios administradores y usuarios operativos, y permite trabajar con partidas jerarquicas dentro de cada presupuesto.
 
-## About Laravel
+## Funcionalidades principales
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Autenticacion de usuarios con login, registro, recuperacion y cambio de contrasena.
+- Roles `admin` y `user`.
+- CRUD de presupuestos con codigo autogenerado, fecha, estado y costo total.
+- Partidas jerarquicas con soporte para items padre e hijos.
+- Recalculo automatico de subtotales e importe total del presupuesto.
+- Publicacion de presupuestos para mostrarlos en la portada publica.
+- Administracion de categorias, unidades y recursos desde el panel de administracion.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Stack tecnico
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2
+- Laravel 12
+- Blade
+- Laravel Breeze
+- Vite
+- Tailwind CSS 4
+- Alpine.js
+- MariaDB como configuracion base en `.env.example`
 
-## Learning Laravel
+## Estados y permisos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Presupuestos
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Los presupuestos manejan estos estados:
 
-## Laravel Sponsors
+- `draft`
+- `published`
+- `cancelled`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Cuando un presupuesto esta publicado y `is_published = true`, aparece en la portada (`/`) y puede consultarse de forma publica.
 
-### Premium Partners
+### Roles
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- `admin`: puede acceder al panel `/admin`, gestionar catalogos y ver o administrar presupuestos.
+- `user`: puede crear y administrar sus propios presupuestos.
 
-## Contributing
+## Estructura funcional
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Catalogos administrativos
 
-## Code of Conduct
+El panel de administracion permite gestionar:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Categorias
+- Unidades
+- Recursos
 
-## Security Vulnerabilities
+Los recursos se relacionan con una categoria y una unidad, y pueden reutilizarse al crear items dentro de un presupuesto.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Presupuestos
 
-## License
+Cada presupuesto incluye:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- `code`: codigo autogenerado con formato `BGT-000001`
+- `title`
+- `description`
+- `budget_date`
+- `status`
+- `is_published`
+- `total_cost`
+
+### Items del presupuesto
+
+Los items pueden:
+
+- Ser partidas raiz o subpartidas
+- Tomar un recurso existente del catalogo
+- Tener unidad, cantidad, precio unitario y subtotal
+- Ordenarse dentro del mismo nivel mediante `sort_order`
+
+El total del presupuesto se recalcula en base a la jerarquia completa de items.
+
+## Requisitos
+
+- PHP 8.2 o superior
+- Composer
+- Node.js 20 o superior
+- npm
+- MariaDB o una base de datos compatible con la configuracion de Laravel
+
+## Instalacion
+
+1. Instala dependencias PHP:
+
+```bash
+composer install
+```
+
+2. Copia el archivo de entorno:
+
+```bash
+copy .env.example .env
+```
+
+3. Configura la conexion a base de datos en `.env`.
+
+Valores de ejemplo incluidos en el repositorio:
+
+```env
+DB_CONNECTION=mariadb
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=app
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+4. Genera la clave de la aplicacion:
+
+```bash
+php artisan key:generate
+```
+
+5. Ejecuta migraciones y seeders:
+
+```bash
+php artisan migrate --seed
+```
+
+6. Instala dependencias frontend:
+
+```bash
+npm install
+```
+
+7. Levanta el entorno de desarrollo:
+
+```bash
+composer run dev
+```
+
+Ese comando inicia:
+
+- servidor Laravel
+- listener de colas
+- Vite en modo desarrollo
+
+Si prefieres preparar todo de una vez despues de configurar `.env`, puedes usar:
+
+```bash
+composer run setup
+```
+
+## Usuario inicial
+
+El seeder actual crea un usuario de prueba:
+
+- Email: `test@example.com`
+- Password: `password`
+- Rol inicial: `user`
+
+Ese usuario no accede al panel de administracion hasta que se le cambie el rol a `admin`.
+
+Para promoverlo:
+
+```bash
+php artisan tinker
+```
+
+```php
+App\Models\User::where('email', 'test@example.com')->update(['role' => 'admin']);
+```
+
+## Flujo recomendado de uso
+
+1. Ingresar como administrador.
+2. Crear categorias, unidades y recursos en `/admin`.
+3. Crear un presupuesto desde `/budgets`.
+4. Agregar items raiz y subitems.
+5. Publicar el presupuesto cuando deba aparecer en la portada publica.
+
+## Rutas principales
+
+- `/`: listado publico de presupuestos publicados
+- `/budgets/public/{budget}`: detalle publico de un presupuesto publicado
+- `/dashboard`: panel general de usuario autenticado
+- `/budgets`: gestion de presupuestos
+- `/admin/dashboard`: panel administrativo
+- `/admin/categories`: administracion de categorias
+- `/admin/resources`: administracion de recursos
+- `/admin/units`: administracion de unidades
+
+## Scripts utiles
+
+```bash
+composer run dev
+composer run test
+npm run dev
+npm run build
+```
+
+## Notas
+
+- El seeder incluido solo crea un usuario de prueba; no carga categorias, unidades ni recursos.
+- Los catalogos base deben cargarse desde el panel de administracion.
+- La pagina principal muestra unicamente presupuestos publicados.
