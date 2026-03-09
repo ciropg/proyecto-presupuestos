@@ -121,6 +121,7 @@
                                     <table class="min-w-full divide-y divide-gray-200">
                                         <thead class="bg-gray-50">
                                             <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('No.') }}</th>
                                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Item') }}</th>
                                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Category') }}</th>
                                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Unit') }}</th>
@@ -136,13 +137,14 @@
                                                     'budgetItem' => $budgetItem,
                                                     'depth' => 0,
                                                     'ancestorIds' => [],
+                                                    'itemNumber' => (string) $loop->iteration,
                                                     'showActions' => false,
                                                 ])
                                             @endforeach
                                         </tbody>
                                         <tfoot class="bg-gray-50">
                                             <tr>
-                                                <td colspan="5" class="px-4 py-4 text-right text-sm font-semibold uppercase tracking-wider text-gray-500">
+                                                <td colspan="6" class="px-4 py-4 text-right text-sm font-semibold uppercase tracking-wider text-gray-500">
                                                     {{ __('Total General') }}
                                                 </td>
                                                 <td class="px-4 py-4 text-sm font-semibold text-gray-900">

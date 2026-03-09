@@ -1,6 +1,7 @@
 @php
     $depth = $depth ?? 0;
     $ancestorIds = $ancestorIds ?? [];
+    $itemNumber = $itemNumber ?? '1';
     $showActions = $showActions ?? false;
     $hasChildren = $budgetItem->children->isNotEmpty();
     $visibilityExpression = empty($ancestorIds)
@@ -15,6 +16,9 @@
         x-show="{{ $visibilityExpression }}"
     @endif
 >
+    <td class="px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap">
+        {{ $itemNumber }}
+    </td>
     <td class="px-6 py-4 text-sm text-gray-900">
         <div class="flex items-start gap-3" style="padding-left: {{ $depth * 1.5 }}rem;">
             @if ($hasChildren)
@@ -85,6 +89,7 @@
         'budgetItem' => $childItem,
         'depth' => $depth + 1,
         'ancestorIds' => $nextAncestorIds,
+        'itemNumber' => $itemNumber.'.'.$loop->iteration,
         'showActions' => $showActions,
     ])
 @endforeach

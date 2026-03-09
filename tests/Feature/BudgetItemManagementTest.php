@@ -419,14 +419,26 @@ class BudgetItemManagementTest extends TestCase
             'unit_price' => 15,
             'subtotal' => 30,
         ]);
+        $secondRootItem = $this->createBudgetItem($budget, [
+            'unit_id' => $unit->id,
+            'name' => 'Second root item',
+            'description' => 'Another top-level item',
+            'quantity' => 1,
+            'unit_price' => 12,
+            'subtotal' => 12,
+            'sort_order' => 2,
+        ]);
 
         $budget->recalculateTotalCost();
 
         $this->actingAs($user)
             ->get(route('budgets.show', $budget))
             ->assertOk()
+            ->assertSee('No.')
             ->assertSee($parentItem->name)
             ->assertSee($childItem->name)
+            ->assertSee($secondRootItem->name)
+            ->assertSee('1.1')
             ->assertSee('Add Subitem')
             ->assertSee('Toggle subitems');
     }

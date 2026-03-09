@@ -162,6 +162,7 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('No.') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Item') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Category') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __('Unit') }}</th>
@@ -178,11 +179,12 @@
                                     'budgetItem' => $budgetItem,
                                     'depth' => 0,
                                     'ancestorIds' => [],
+                                    'itemNumber' => (string) $loop->iteration,
                                     'showActions' => true,
                                 ])
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-10 text-center text-sm text-gray-500">
+                                    <td colspan="8" class="px-6 py-10 text-center text-sm text-gray-500">
                                         {{ __('No items have been added to this budget yet.') }}
                                     </td>
                                 </tr>
@@ -190,7 +192,7 @@
                         </tbody>
                         <tfoot class="bg-gray-50">
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-right text-sm font-semibold uppercase tracking-wider text-gray-500">
+                                <td colspan="6" class="px-6 py-4 text-right text-sm font-semibold uppercase tracking-wider text-gray-500">
                                     {{ __('Total General') }}
                                 </td>
                                 <td class="px-6 py-4 text-sm font-semibold text-gray-900">

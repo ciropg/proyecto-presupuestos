@@ -67,8 +67,21 @@ class PublicBudgetPublicationTest extends TestCase
             'unit_price' => 25.50,
         ]);
 
+        $parentItem = BudgetItem::query()->create([
+            'budget_id' => $publishedBudget->id,
+            'resource_id' => null,
+            'unit_id' => $unit->id,
+            'name' => 'Structural work',
+            'description' => 'Grouped task',
+            'quantity' => 1,
+            'unit_price' => 0,
+            'subtotal' => 0,
+            'sort_order' => 1,
+        ]);
+
         BudgetItem::query()->create([
             'budget_id' => $publishedBudget->id,
+            'parent_id' => $parentItem->id,
             'resource_id' => $resource->id,
             'unit_id' => $unit->id,
             'name' => $resource->name,
@@ -76,12 +89,17 @@ class PublicBudgetPublicationTest extends TestCase
             'quantity' => 3,
             'unit_price' => 25.50,
             'subtotal' => 76.50,
+            'sort_order' => 1,
         ]);
+
+        $publishedBudget->recalculateTotalCost();
 
         $this->get(route('budgets.public.show', $publishedBudget))
             ->assertOk()
             ->assertSee($publishedBudget->title)
             ->assertSee($publishedBudget->code)
+            ->assertSee('No.')
+            ->assertSee('1.1')
             ->assertSee('Cement')
             ->assertSee('Main material')
             ->assertSee('Materials')
