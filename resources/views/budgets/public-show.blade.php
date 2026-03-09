@@ -10,13 +10,17 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        @include('layouts.theme-init')
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-gray-100 font-sans text-gray-900 antialiased">
-        <div class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-gray-100">
-            <header class="border-b border-gray-200 bg-white/90 backdrop-blur">
+    <body class="bg-gray-100 font-sans text-gray-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+        <x-theme-toggle />
+
+        <div class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-gray-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+            <header class="border-b border-gray-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
                 <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-                    <a href="{{ route('home') }}" class="text-sm font-semibold uppercase tracking-[0.3em] text-gray-600">
+                    <a href="{{ route('home') }}" class="text-sm font-semibold uppercase tracking-[0.3em] text-gray-600 dark:text-slate-300">
                         {{ __('Published Budgets') }}
                     </a>
 

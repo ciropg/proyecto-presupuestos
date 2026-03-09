@@ -11,16 +11,20 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        @include('layouts.theme-init')
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+    <body class="bg-gray-100 font-sans text-gray-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+        <x-theme-toggle />
+
+        <div class="min-h-screen bg-gray-100 dark:bg-slate-950">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
+                <header class="bg-white shadow dark:bg-slate-900">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
