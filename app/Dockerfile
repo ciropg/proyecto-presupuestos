@@ -10,7 +10,6 @@ RUN composer install \
 
 FROM php:8.4-apache
 
-# Extensiones PHP comunes para Laravel + MySQL/MariaDB
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
@@ -26,10 +25,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /var/www/html
 
-# Copia la app ya con vendor instalado
 COPY --from=composer /app /var/www/html
 
-# Apache debe servir desde /public
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
@@ -37,9 +34,17 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
     /etc/apache2/apache2.conf \
     /etc/apache2/conf-available/*.conf
 
-# Permisos necesarios para Laravel
+RUN rm -f /var/www/html/bootstrap/cache/config.php \
+    /var/www/html/bootstrap/cache/routes-v7.php \
+    /var/www/html/bootstrap/cache/events.php \
+    && mkdir -p /var/www/html/storage/framework/cache \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/views \
+    && mkdir -p /var/www/html/storage/logs
+
+RUN test -f /var/www/html/certs/isrgrootx1.pem
+
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Ajusta Apache al puerto que Render espera
 CMD sh -c 'sed -i "s/Listen 80/Listen ${PORT:-10000}/" /etc/apache2/ports.conf && sed -i "s/:80/:${PORT:-10000}/" /etc/apache2/sites-available/000-default.conf && apache2-foreground'
