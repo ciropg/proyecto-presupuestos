@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Budget;
 use App\Policies\BudgetPolicy;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
