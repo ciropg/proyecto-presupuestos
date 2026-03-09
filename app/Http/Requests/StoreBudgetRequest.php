@@ -19,7 +19,6 @@ class StoreBudgetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => ['required', 'string', 'max:50', Rule::unique('budgets', 'code')],
             'title' => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string', 'max:1000'],
             'budget_date' => ['required', 'date'],

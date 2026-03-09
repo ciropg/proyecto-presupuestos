@@ -20,7 +20,6 @@ class BudgetManagementTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('budgets.store'), [
-                'code' => 'BGT-001',
                 'title' => 'House Renovation',
                 'description' => 'Base budget for renovation works',
                 'budget_date' => '2026-03-08',
@@ -28,13 +27,40 @@ class BudgetManagementTest extends TestCase
             ]);
 
         $response->assertRedirect(route('budgets.index'));
+        $budget = Budget::query()->where('user_id', $user->id)->firstOrFail();
+
         $this->assertDatabaseHas('budgets', [
             'user_id' => $user->id,
-            'code' => 'BGT-001',
             'title' => 'House Renovation',
             'status' => Budget::STATUS_DRAFT,
             'is_published' => false,
         ]);
+        $this->assertSame(Budget::generateCodeForId($budget->id), $budget->code);
+    }
+
+    public function test_budget_code_is_generated_automatically_even_if_a_code_is_sent(): void
+    {
+        $user = User::factory()->create([
+            'role' => User::ROLE_USER,
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('budgets.store'), [
+                'code' => 'MANUAL-001',
+                'title' => 'Automatic Code Budget',
+                'description' => 'The code should be ignored.',
+                'budget_date' => '2026-03-08',
+                'status' => Budget::STATUS_DRAFT,
+            ])
+            ->assertRedirect(route('budgets.index'));
+
+        $budget = Budget::query()
+            ->where('user_id', $user->id)
+            ->where('title', 'Automatic Code Budget')
+            ->firstOrFail();
+
+        $this->assertSame(Budget::generateCodeForId($budget->id), $budget->code);
+        $this->assertNotSame('MANUAL-001', $budget->code);
     }
 
     public function test_an_admin_can_view_all_budgets(): void
@@ -189,7 +215,6 @@ class BudgetManagementTest extends TestCase
             ->actingAs($user)
             ->from(route('budgets.create'))
             ->post(route('budgets.store'), [
-                'code' => '',
                 'title' => '',
                 'description' => 'Missing required fields',
                 'budget_date' => '',
@@ -198,6 +223,6 @@ class BudgetManagementTest extends TestCase
 
         $response
             ->assertRedirect(route('budgets.create'))
-            ->assertSessionHasErrors(['code', 'title', 'budget_date', 'status']);
+            ->assertSessionHasErrors(['title', 'budget_date', 'status']);
     }
 }

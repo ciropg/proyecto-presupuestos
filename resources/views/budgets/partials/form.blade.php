@@ -2,17 +2,21 @@
 
 <div class="space-y-6">
     <div>
-        <x-input-label for="code" :value="__('Code')" />
-        <x-text-input
-            id="code"
-            name="code"
-            type="text"
-            class="mt-1 block w-full"
-            :value="old('code', $budget->code ?? '')"
-            required
-            autofocus
-        />
-        <x-input-error class="mt-2" :messages="$errors->get('code')" />
+        <x-input-label :value="__('Code')" />
+
+        @isset($budget)
+            <input
+                type="text"
+                value="{{ $budget->code }}"
+                class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm"
+                readonly
+            />
+            <p class="mt-1 text-xs text-gray-500">{{ __('The budget code is assigned automatically and cannot be edited.') }}</p>
+        @else
+            <div class="mt-1 rounded-md border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+                {{ __('The budget code will be generated automatically when you save this budget.') }}
+            </div>
+        @endisset
     </div>
 
     <div>
@@ -24,6 +28,7 @@
             class="mt-1 block w-full"
             :value="old('title', $budget->title ?? '')"
             required
+            autofocus
         />
         <x-input-error class="mt-2" :messages="$errors->get('title')" />
     </div>

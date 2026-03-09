@@ -12,9 +12,23 @@ class Budget extends Model
 {
     use HasFactory;
 
+    public const CODE_PREFIX = 'BGT-';
     public const STATUS_DRAFT = 'draft';
     public const STATUS_PUBLISHED = 'published';
     public const STATUS_CANCELLED = 'cancelled';
+
+    protected static function booted(): void
+    {
+        static::created(function (self $budget): void {
+            if ($budget->code !== null && $budget->code !== '') {
+                return;
+            }
+
+            $budget->forceFill([
+                'code' => self::generateCodeForId($budget->id),
+            ])->saveQuietly();
+        });
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -56,6 +70,11 @@ class Budget extends Model
             self::STATUS_PUBLISHED => 'Published',
             self::STATUS_CANCELLED => 'Cancelled',
         ];
+    }
+
+    public static function generateCodeForId(int $id): string
+    {
+        return self::CODE_PREFIX.str_pad((string) $id, 6, '0', STR_PAD_LEFT);
     }
 
     public function user(): BelongsTo
