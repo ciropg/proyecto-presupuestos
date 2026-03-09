@@ -23,5 +23,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Budget::class, BudgetPolicy::class);
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }
