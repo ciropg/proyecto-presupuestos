@@ -8,7 +8,7 @@ RUN composer install \
     --optimize-autoloader \
     --no-interaction
 
-FROM php:8.3-apache
+FROM php:8.4-apache
 
 # Extensiones PHP comunes para Laravel + MySQL/MariaDB
 RUN apt-get update && apt-get install -y \
